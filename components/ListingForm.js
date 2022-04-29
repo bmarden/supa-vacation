@@ -6,6 +6,7 @@ import { toast } from 'react-hot-toast';
 import { Formik, Form } from 'formik';
 import Input from '@/components/Input';
 import ImageUpload from '@/components/ImageUpload';
+import axios from 'axios';
 
 const ListingSchema = Yup.object().shape({
   title: Yup.string().trim().required(),
@@ -13,22 +14,36 @@ const ListingSchema = Yup.object().shape({
   price: Yup.number().positive().integer().min(1).required(),
   guests: Yup.number().positive().integer().min(1).required(),
   beds: Yup.number().positive().integer().min(1).required(),
-  baths: Yup.number().positive().integer().min(1).required(),
+  baths: Yup.number().positive().integer().min(1).required()
 });
 
 const ListingForm = ({
   initialValues = null,
   redirectPath = '',
   buttonText = 'Submit',
-  onSubmit = () => null,
+  onSubmit = () => null
 }) => {
   const router = useRouter();
 
   const [disabled, setDisabled] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialValues?.image ?? '');
 
-  const upload = async image => {
-    // TODO: Upload image to remote storage
+  const upload = async (image) => {
+    if (!image) return;
+
+    let toastId;
+    try {
+      setDisabled(true);
+      toastId = toast.loading('Uploading...');
+      const { data } = await axios.post('/api/image-upload', { image });
+      setImageUrl(data?.url);
+      toast.success('Successfully uploaded', { id: toastId });
+    } catch (error) {
+      toast.error('Unable to upload', { id: toastId });
+      setImageUrl('');
+    } finally {
+      setDisabled(false);
+    }
   };
 
   const handleOnSubmit = async (values = null) => {
@@ -58,7 +73,7 @@ const ListingForm = ({
     price: 0,
     guests: 1,
     beds: 1,
-    baths: 1,
+    baths: 1
   };
 
   return (
@@ -157,11 +172,11 @@ ListingForm.propTypes = {
     price: PropTypes.number,
     guests: PropTypes.number,
     beds: PropTypes.number,
-    baths: PropTypes.number,
+    baths: PropTypes.number
   }),
   redirectPath: PropTypes.string,
   buttonText: PropTypes.string,
-  onSubmit: PropTypes.func,
+  onSubmit: PropTypes.func
 };
 
 export default ListingForm;
