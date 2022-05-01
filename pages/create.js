@@ -1,6 +1,7 @@
 import Layout from '@/components/Layout';
 import ListingForm from '@/components/ListingForm';
 import axios from 'axios';
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 const Create = () => {
   const addHome = (data) => axios.post('/api/homes', data);
@@ -17,5 +18,7 @@ const Create = () => {
     </Layout>
   );
 };
+
+export const getServerSideProps = withPageAuthRequired();
 
 export default Create;

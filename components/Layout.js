@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -12,31 +12,32 @@ import {
   LogoutIcon,
   PlusIcon,
   SparklesIcon,
-  UserIcon,
+  UserIcon
 } from '@heroicons/react/outline';
 import { ChevronDownIcon } from '@heroicons/react/solid';
+import { useUser } from '@auth0/nextjs-auth0';
 
 const menuItems = [
   {
     label: 'List a new home',
     icon: PlusIcon,
-    href: '/list',
+    href: '/list'
   },
   {
     label: 'My homes',
     icon: HomeIcon,
-    href: '/homes',
+    href: '/homes'
   },
   {
     label: 'Favorites',
     icon: HeartIcon,
-    href: '/favorites',
+    href: '/favorites'
   },
   {
     label: 'Logout',
     icon: LogoutIcon,
-    onClick: () => null,
-  },
+    href: '/api/auth/logout'
+  }
 ];
 
 const Layout = ({ children = null }) => {
@@ -44,8 +45,15 @@ const Layout = ({ children = null }) => {
 
   const [showModal, setShowModal] = useState(false);
 
-  const user = null;
-  const isLoadingUser = false;
+  const { user, error, isLoading } = useUser();
+
+  useEffect(() => {
+    if (user != null) {
+      console.log(user);
+    }
+  
+  }, [user])
+
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -79,18 +87,14 @@ const Layout = ({ children = null }) => {
                     List your home
                   </a>
                 </Link>
-                {isLoadingUser ? (
+                {isLoading ? (
                   <div className="h-8 w-[75px] bg-gray-200 animate-pulse rounded-md" />
                 ) : user ? (
                   <Menu as="div" className="relative z-50">
                     <Menu.Button className="flex items-center space-x-px group">
                       <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-9 h-9">
-                        {user?.image ? (
-                          <Image
-                            src={user?.image}
-                            alt={user?.name || 'Avatar'}
-                            layout="fill"
-                          />
+                        {user?.picture ? (
+                          <Image src={user?.picture} alt={user?.name || 'Avatar'} layout="fill" />
                         ) : (
                           <UserIcon className="text-gray-400 w-6 h-6" />
                         )}
@@ -109,64 +113,51 @@ const Layout = ({ children = null }) => {
                       <Menu.Items className="absolute right-0 w-72 overflow-hidden mt-1 divide-y divide-gray-100 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div className="flex items-center space-x-2 py-4 px-4 mb-2">
                           <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-9 h-9">
-                            {user?.image ? (
-                              <Image
-                                src={user?.image}
-                                alt={user?.name || 'Avatar'}
-                                layout="fill"
-                              />
+                            {user?.picture ? (
+                              <Image src={user?.picture} alt={user?.name || 'Avatar'} layout="fill" />
                             ) : (
                               <UserIcon className="text-gray-400 w-6 h-6" />
                             )}
                           </div>
                           <div className="flex flex-col truncate">
                             <span>{user?.name}</span>
-                            <span className="text-sm text-gray-500">
-                              {user?.email}
-                            </span>
+                            <span className="text-sm text-gray-500">{user?.email}</span>
                           </div>
                         </div>
 
                         <div className="py-2">
-                          {menuItems.map(
-                            ({ label, href, onClick, icon: Icon }) => (
-                              <div
-                                key={label}
-                                className="px-2 last:border-t last:pt-2 last:mt-2"
-                              >
-                                <Menu.Item>
-                                  {href ? (
-                                    <Link href={href}>
-                                      <a className="flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-100">
-                                        <Icon className="w-5 h-5 shrink-0 text-gray-500" />
-                                        <span>{label}</span>
-                                      </a>
-                                    </Link>
-                                  ) : (
-                                    <button
-                                      className="w-full flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-100"
-                                      onClick={onClick}
-                                    >
+                          {menuItems.map(({ label, href, onClick, icon: Icon }) => (
+                            <div key={label} className="px-2 last:border-t last:pt-2 last:mt-2">
+                              <Menu.Item>
+                                {href ? (
+                                  <Link href={href}>
+                                    <a className="flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-100">
                                       <Icon className="w-5 h-5 shrink-0 text-gray-500" />
                                       <span>{label}</span>
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                              </div>
-                            )
-                          )}
+                                    </a>
+                                  </Link>
+                                ) : (
+                                  <button
+                                    className="w-full flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-100"
+                                    onClick={onClick}
+                                  >
+                                    <Icon className="w-5 h-5 shrink-0 text-gray-500" />
+                                    <span>{label}</span>
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            </div>
+                          ))}
                         </div>
                       </Menu.Items>
                     </Transition>
                   </Menu>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={openModal}
-                    className="ml-4 px-4 py-1 rounded-md bg-rose-600 hover:bg-rose-500 focus:outline-none focus:ring-4 focus:ring-rose-500 focus:ring-opacity-50 text-white transition"
-                  >
-                    Log in
-                  </button>
+                  <Link href="/api/auth/login">
+                    <a className="ml-4 px-4 py-1 rounded-md bg-rose-600 hover:bg-rose-500 focus:outline-none focus:ring-4 focus:ring-rose-500 focus:ring-opacity-50 text-white transition">
+                      Login
+                    </a>
+                  </Link>
                 )}
               </div>
             </div>
@@ -186,7 +177,7 @@ const Layout = ({ children = null }) => {
 };
 
 Layout.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
 };
 
 export default Layout;
