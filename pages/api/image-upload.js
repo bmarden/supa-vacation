@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
 import { decode } from 'base64-arraybuffer';
+import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
@@ -12,7 +13,7 @@ export const config = {
   }
 };
 
-export default async function handler(req, res) {
+export default withApiAuthRequired(async function handler(req, res) {
   // Upload img to supabase
   if (req.method === 'POST') {
     let { image } = req.body;
@@ -54,4 +55,4 @@ export default async function handler(req, res) {
     res.setHeader('Allow', ['POST']);
     res.status(405).json({ message: `HTTP method ${req.method} is not supported` });
   }
-}
+});

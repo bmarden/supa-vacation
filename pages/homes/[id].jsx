@@ -45,6 +45,10 @@ const ListedHome = (home = null) => {
     return 'Loading...';
   }
 
+  if (home) {
+    console.log(home);
+  }
+
   return (
     <Layout>
       <div className="max-w-screen-lg mx-auto">
@@ -67,12 +71,11 @@ const ListedHome = (home = null) => {
           </div>
         </div>
 
-        <div className="mt-6 relative aspect-video bg-gray-200 rounded-lg shadow-md overflow-hidden">
-          {home?.image ? (
+        <div className="mt-6 relative aspect-w-16 aspect-h-9 bg-gray-200 rounded-lg shadow-md overflow-hidden">
+          {home?.image && (
             <Image src={home.image} alt={home.title} layout="fill" objectFit="cover" />
-          ) : null}
+          )}
         </div>
-
         <p className="mt-8 text-lg">{home?.description ?? ''}</p>
       </div>
     </Layout>
