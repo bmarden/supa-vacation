@@ -1,9 +1,20 @@
-import { useState, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useRef, ReactEventHandler } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import classNames from 'classnames';
 import { ArrowUpIcon } from '@heroicons/react/outline';
+
+interface ImageUploadProps {
+  label?: string;
+  initialImage?: {
+    src: string;
+    alt: string;
+  };
+  objectFit?: React.CSSProperties['objectFit'];
+  accept?: string;
+  sizeLimit?: number;
+  onChangePicture?: (data: any) => void;
+}
 
 const ImageUpload = ({
   label = 'Image',
@@ -11,15 +22,15 @@ const ImageUpload = ({
   objectFit = 'cover',
   accept = '.png, .jpg, .jpeg, .gif',
   sizeLimit = 10 * 1024 * 1024, // 10MB
-  onChangePicture = () => null,
-}) => {
-  const pictureRef = useRef();
+  onChangePicture = (data: any) => null
+}: ImageUploadProps) => {
+  const pictureRef = useRef<HTMLInputElement>();
 
   const [image, setImage] = useState(initialImage);
   const [updatingPicture, setUpdatingPicture] = useState(false);
   const [pictureError, setPictureError] = useState(null);
 
-  const handleOnChangePicture = e => {
+  const handleOnChangePicture = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files[0];
     const reader = new FileReader();
 
@@ -29,7 +40,7 @@ const ImageUpload = ({
       'load',
       async function () {
         try {
-          setImage({ src: reader.result, alt: fileName });
+          setImage({ src: reader.result.toString(), alt: fileName });
           if (typeof onChangePicture === 'function') {
             await onChangePicture(reader.result);
           }
@@ -74,12 +85,7 @@ const ImageUpload = ({
         )}
       >
         {image?.src ? (
-          <Image
-            src={image.src}
-            alt={image?.alt ?? ''}
-            layout="fill"
-            objectFit={objectFit}
-          />
+          <Image src={image.src} alt={image?.alt ?? ''} layout="fill" objectFit={objectFit} />
         ) : null}
 
         <div className="flex items-center justify-center">
@@ -103,23 +109,21 @@ const ImageUpload = ({
         </div>
       </button>
 
-      {pictureError ? (
-        <span className="text-red-600 text-sm">{pictureError}</span>
-      ) : null}
+      {pictureError ? <span className="text-red-600 text-sm">{pictureError}</span> : null}
     </div>
   );
 };
 
-ImageUpload.propTypes = {
-  label: PropTypes.string,
-  initialImage: PropTypes.shape({
-    src: PropTypes.string,
-    alt: PropTypes.string,
-  }),
-  objectFit: PropTypes.string,
-  accept: PropTypes.string,
-  sizeLimit: PropTypes.number,
-  onChangePicture: PropTypes.func,
-};
+// ImageUpload.propTypes = {
+//   label: PropTypes.string,
+//   initialImage: PropTypes.shape({
+//     src: PropTypes.string,
+//     alt: PropTypes.string,
+//   }),
+//   objectFit: PropTypes.string,
+//   accept: PropTypes.string,
+//   sizeLimit: PropTypes.number,
+//   onChangePicture: PropTypes.func,
+// };
 
 export default ImageUpload;

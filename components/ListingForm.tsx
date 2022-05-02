@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import PropTypes from 'prop-types';
 import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
 import { Formik, Form } from 'formik';
@@ -21,7 +20,7 @@ const ListingForm = ({
   initialValues = null,
   redirectPath = '',
   buttonText = 'Submit',
-  onSubmit = () => null
+  onSubmit = (data: any) => null
 }) => {
   const router = useRouter();
 
@@ -164,19 +163,19 @@ const ListingForm = ({
   );
 };
 
-ListingForm.propTypes = {
-  initialValues: PropTypes.shape({
-    image: PropTypes.string,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    price: PropTypes.number,
-    guests: PropTypes.number,
-    beds: PropTypes.number,
-    baths: PropTypes.number
-  }),
-  redirectPath: PropTypes.string,
-  buttonText: PropTypes.string,
-  onSubmit: PropTypes.func
-};
+// ListingForm.propTypes = {
+//   initialValues: PropTypes.shape({
+//     image: PropTypes.string,
+//     title: PropTypes.string,
+//     description: PropTypes.string,
+//     price: PropTypes.number,
+//     guests: PropTypes.number,
+//     beds: PropTypes.number,
+//     baths: PropTypes.number
+//   }),
+//   redirectPath: PropTypes.string,
+//   buttonText: PropTypes.string,
+//   onSubmit: PropTypes.func
+// };
 
 export default ListingForm;
