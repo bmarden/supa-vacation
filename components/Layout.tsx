@@ -1,10 +1,8 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, SVGProps } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
-import PropTypes from 'prop-types';
-import AuthModal from './AuthModal';
 import { Menu, Transition } from '@headlessui/react';
 import {
   HeartIcon,
@@ -17,7 +15,14 @@ import {
 import { ChevronDownIcon } from '@heroicons/react/solid';
 import { useUser } from '@auth0/nextjs-auth0';
 
-const menuItems = [
+type MenuItemType = {
+  label: string;
+  icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+  href?: string;
+  onClick?: () => void;
+}
+
+const menuItems: MenuItemType[] = [
   {
     label: 'List a new home',
     icon: PlusIcon,
@@ -40,7 +45,11 @@ const menuItems = [
   }
 ];
 
-const Layout = ({ children = null }) => {
+interface LayoutProps {
+  children: JSX.Element; 
+}
+
+const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
 
   const [showModal, setShowModal] = useState(false);
@@ -166,18 +175,13 @@ const Layout = ({ children = null }) => {
 
         <main className="flex-grow container mx-auto">
           <div className="px-4 py-12">
-            {typeof children === 'function' ? children(openModal) : children}
+            {children}
           </div>
         </main>
 
-        <AuthModal show={showModal} onClose={closeModal} />
       </div>
     </>
   );
-};
-
-Layout.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.node, PropTypes.func])
 };
 
 export default Layout;
