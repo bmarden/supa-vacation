@@ -30,7 +30,7 @@ const ListingForm = ({
   const upload = async (image) => {
     if (!image) return;
 
-    let toastId;
+    let toastId: string;
     try {
       setDisabled(true);
       toastId = toast.loading('Uploading...');

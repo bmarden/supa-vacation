@@ -3,6 +3,7 @@ import Layout from '@/components/Layout';
 import ListingForm from '@/components/ListingForm';
 import { PrismaClient } from '@prisma/client';
 import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';
+import { InferGetServerSidePropsType } from 'next'
 import axios from 'axios';
 
 const prisma = new PrismaClient();
@@ -27,7 +28,7 @@ export const getServerSideProps = withPageAuthRequired({
       select: { listedHomes: true }
     });
 
-    const id = ctx.params.id;
+    const id = ctx?.params?.id;
     const home = user?.listedHomes?.find((home) => home.id === id);
     if (!home) {
       return redirect;
@@ -35,13 +36,19 @@ export const getServerSideProps = withPageAuthRequired({
 
     return {
       props: {
-        home: JSON.parse(JSON.stringify(home))
+        home
+        // home: JSON.parse(JSON.stringify(home))
       }
     };
   }
 });
 
-const Edit = ({ home, user }) => {
+interface EditProps {
+  home: object; 
+  user: object;
+}
+
+const Edit = ({ home, user }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const handleOnSubmit = (data) => {
     axios.patch(`/api/homes/${home.id}`, data);
   };

@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { nanoid } from 'nanoid';
 import { decode } from 'base64-arraybuffer';
-import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
+import { withApiAuthRequired } from '@auth0/nextjs-auth0';
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabase = createClient(process.env.SUPABASE_URL ?? '', process.env.SUPABASE_KEY ?? '');
 
 export const config = {
   api: {
@@ -23,8 +23,8 @@ export default withApiAuthRequired(async function handler(req, res) {
     }
 
     try {
-      const contentType = image.match(/data:(.*);base64/)?.[1];
-      const base64FileData = image.split('base64,')?.[1];
+      const contentType: string = image.match(/data:(.*);base64/)?.[1];
+      const base64FileData: string = image.split('base64,')?.[1];
 
       if (!contentType || !base64FileData) {
         return res.status(500).json({ message: 'Image data not valid' });
@@ -35,7 +35,7 @@ export default withApiAuthRequired(async function handler(req, res) {
       const path = `${fileName}.${ext}`;
 
       const { data, error: uploadError } = await supabase.storage
-        .from(process.env.SUPABASE_BUCKET)
+        .from(process.env.SUPABASE_BUCKET ?? '')
         .upload(path, decode(base64FileData), {
           contentType,
           upsert: true
@@ -46,7 +46,7 @@ export default withApiAuthRequired(async function handler(req, res) {
         throw new Error('Unable to upload image to storage');
       }
 
-      const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/${data.Key}`;
+      const url = `${process.env.SUPABASE_URL}/storage/v1/object/public/${data?.Key}`;
       return res.status(200).json({ url });
     } catch (err) {
       res.status(500).json({ message: 'Something went wrong' });
