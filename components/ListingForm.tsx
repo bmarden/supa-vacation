@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
 import { withFormik, FormikProps, FormikErrors, Form, Field, Formik } from 'formik';
 import Input from '@/components/Input';
+import TextArea from '@/components/TextArea';
 import ImageUpload from '@/components/ImageUpload';
 import axios from 'axios';
 import { Home } from '@prisma/client';
@@ -119,9 +120,8 @@ const ListingForm = ({
                 disabled={disabled}
               />
 
-              <Input
+              <TextArea
                 name="description"
-                type="textarea"
                 label="Description"
                 placeholder="Very charming and modern apartment in Amsterdam..."
                 disabled={disabled}
