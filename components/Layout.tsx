@@ -1,9 +1,11 @@
-import { Fragment, useState, useEffect, SVGProps } from 'react';
+/* eslint-disable @next/next/no-html-link-for-pages */
+import React, { Fragment, useState, useEffect, SVGProps, forwardRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, Transition } from '@headlessui/react';
+import NextLink from './NextLink';
 import {
   HeartIcon,
   HomeIcon,
@@ -18,9 +20,8 @@ import { useUser } from '@auth0/nextjs-auth0';
 type MenuItemType = {
   label: string;
   icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
-  href?: string;
-  onClick?: () => void;
-}
+  href: string;
+};
 
 const menuItems: MenuItemType[] = [
   {
@@ -46,7 +47,7 @@ const menuItems: MenuItemType[] = [
 ];
 
 interface LayoutProps {
-  children: JSX.Element; 
+  children: JSX.Element;
 }
 
 const Layout = ({ children }: LayoutProps) => {
@@ -60,9 +61,7 @@ const Layout = ({ children }: LayoutProps) => {
     if (user != null) {
       console.log(user);
     }
-  
-  }, [user])
-
+  }, [user]);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
@@ -82,7 +81,7 @@ const Layout = ({ children }: LayoutProps) => {
         <header className="h-16 w-full shadow-md">
           <div className="h-full container mx-auto">
             <div className="h-full px-4 flex justify-between items-center space-x-4">
-              <Link href="/">
+              <Link href="/" passHref>
                 <a className="flex items-center space-x-1">
                   <SparklesIcon className="shrink-0 w-8 h-8 text-rose-500" />
                   <span className="text-xl font-semibold tracking-wide">
@@ -123,7 +122,11 @@ const Layout = ({ children }: LayoutProps) => {
                         <div className="flex items-center space-x-2 py-4 px-4 mb-2">
                           <div className="shrink-0 flex items-center justify-center rounded-full overflow-hidden relative bg-gray-200 w-9 h-9">
                             {user?.picture ? (
-                              <Image src={user?.picture} alt={user?.name || 'Avatar'} layout="fill" />
+                              <Image
+                                src={user?.picture}
+                                alt={user?.name || 'Avatar'}
+                                layout="fill"
+                              />
                             ) : (
                               <UserIcon className="text-gray-400 w-6 h-6" />
                             )}
@@ -135,25 +138,16 @@ const Layout = ({ children }: LayoutProps) => {
                         </div>
 
                         <div className="py-2">
-                          {menuItems.map(({ label, href, onClick, icon: Icon }) => (
+                          {menuItems.map(({ label, href, icon: Icon }) => (
                             <div key={label} className="px-2 last:border-t last:pt-2 last:mt-2">
                               <Menu.Item>
-                                {href ? (
-                                  <Link href={href}>
-                                    <a className="flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-100">
-                                      <Icon className="w-5 h-5 shrink-0 text-gray-500" />
-                                      <span>{label}</span>
-                                    </a>
-                                  </Link>
-                                ) : (
-                                  <button
-                                    className="w-full flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-100"
-                                    onClick={onClick}
-                                  >
-                                    <Icon className="w-5 h-5 shrink-0 text-gray-500" />
-                                    <span>{label}</span>
-                                  </button>
-                                )}
+                                <NextLink
+                                  href={href}
+                                  className="flex items-center space-x-2 py-2 px-4 rounded-md hover:bg-gray-100"
+                                >
+                                  <Icon className="w-5 h-5 shrink-0 text-gray-500" />
+                                  <span>{label}</span>
+                                </NextLink>
                               </Menu.Item>
                             </div>
                           ))}
@@ -174,11 +168,8 @@ const Layout = ({ children }: LayoutProps) => {
         </header>
 
         <main className="flex-grow container mx-auto">
-          <div className="px-4 py-12">
-            {children}
-          </div>
+          <div className="px-4 py-12">{children}</div>
         </main>
-
       </div>
     </>
   );
