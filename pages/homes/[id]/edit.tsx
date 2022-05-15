@@ -1,6 +1,6 @@
 // pages/homes/[id]/edit.js
 import Layout from '@/components/Layout';
-import ListingForm from '@/components/ListingForm';
+import ListingForm, { FormValues } from '@/components/ListingForm';
 import { PrismaClient } from '@prisma/client';
 import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { InferGetServerSidePropsType } from 'next'
@@ -37,7 +37,6 @@ export const getServerSideProps = withPageAuthRequired({
     return {
       props: {
         home
-        // home: JSON.parse(JSON.stringify(home))
       }
     };
   }
@@ -49,7 +48,7 @@ interface EditProps {
 }
 
 const Edit = ({ home, user }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  const handleOnSubmit = (data) => {
+  const handleOnSubmit = (data: FormValues) => {
     axios.patch(`/api/homes/${home.id}`, data);
   };
   return (

@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState } from 'react'; 
 import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 import { toast } from 'react-hot-toast';
-import { Formik, Form } from 'formik';
+import { withFormik, FormikProps, FormikErrors, Form, Field, Formik } from 'formik';
 import Input from '@/components/Input';
 import ImageUpload from '@/components/ImageUpload';
 import axios from 'axios';
+import { Home } from '@prisma/client';
 
 const ListingSchema = Yup.object().shape({
   title: Yup.string().trim().required(),
@@ -16,21 +17,38 @@ const ListingSchema = Yup.object().shape({
   baths: Yup.number().positive().integer().min(1).required()
 });
 
+interface ListingFormProps {
+  initialValues?: Home;
+  redirectPath: string;
+  buttonText: string;
+  onSubmit: (data: any) => void;
+}
+
+export interface FormValues {
+  image: string;
+  title: string;
+  description: string;
+  price: number;
+  guests: number;
+  beds: number;
+  baths: number;
+}
+
 const ListingForm = ({
-  initialValues = null,
+  initialValues,
   redirectPath = '',
   buttonText = 'Submit',
   onSubmit = (data: any) => null
-}) => {
+}: ListingFormProps) => {
   const router = useRouter();
 
   const [disabled, setDisabled] = useState(false);
   const [imageUrl, setImageUrl] = useState(initialValues?.image ?? '');
 
-  const upload = async (image) => {
+  const upload = async (image?: string) => {
     if (!image) return;
 
-    let toastId: string;
+    let toastId = '';
     try {
       setDisabled(true);
       toastId = toast.loading('Uploading...');
@@ -45,8 +63,8 @@ const ListingForm = ({
     }
   };
 
-  const handleOnSubmit = async (values = null) => {
-    let toastId;
+  const handleOnSubmit = async (values: FormValues) => {
+    let toastId = '';
     try {
       setDisabled(true);
       toastId = toast.loading('Submitting...');
@@ -65,21 +83,21 @@ const ListingForm = ({
     }
   };
 
-  const { image, ...initialFormValues } = initialValues ?? {
-    image: '',
-    title: '',
-    description: '',
-    price: 0,
-    guests: 1,
-    beds: 1,
-    baths: 1
-  };
+  const initialFormValues: FormValues = {
+    image: initialValues?.image ?? '',
+    title: initialValues?.title ?? '',
+    description: initialValues?.description ?? '',
+    price: initialValues?.price ?? 0,
+    guests: initialValues?.guests ?? 1,
+    beds: initialValues?.beds ?? 1,
+    baths: initialValues?.baths ?? 1
+  } 
 
   return (
     <div>
       <div className="mb-8 max-w-md">
         <ImageUpload
-          initialImage={{ src: image, alt: initialFormValues.title }}
+          initialImage={{ src: initialFormValues.image, alt: initialFormValues.title }}
           onChangePicture={upload}
         />
       </div>
@@ -162,20 +180,5 @@ const ListingForm = ({
     </div>
   );
 };
-
-// ListingForm.propTypes = {
-//   initialValues: PropTypes.shape({
-//     image: PropTypes.string,
-//     title: PropTypes.string,
-//     description: PropTypes.string,
-//     price: PropTypes.number,
-//     guests: PropTypes.number,
-//     beds: PropTypes.number,
-//     baths: PropTypes.number
-//   }),
-//   redirectPath: PropTypes.string,
-//   buttonText: PropTypes.string,
-//   onSubmit: PropTypes.func
-// };
 
 export default ListingForm;

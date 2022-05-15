@@ -1,18 +1,45 @@
 import { useEffect } from 'react';
 import Image from 'next/image';
 import Layout from '@/components/Layout';
-import { PrismaClient, User } from '@prisma/client';
+import { Home, PrismaClient, User } from '@prisma/client';
 import { useRouter } from 'next/router';
 import { useUser } from '@auth0/nextjs-auth0';
 import { useState } from 'react';
+import { InferGetStaticPropsType } from 'next';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { GetStaticPaths, GetStaticProps } from 'next';
 
 const prisma = new PrismaClient();
 
-// const homeWithOwner
+type Params = { id: string };
+type Props = {
+  home?: Home;
+};
 
-export async function getStaticPaths() {
+export const getStaticProps: GetStaticProps<Props, Params> = async (context) => {
+  const home = await prisma.home.findUnique({
+    where: { id: context.params?.id }
+  });
+
+  if (home) {
+    console.log(home);
+    return {
+      props: {
+        home
+      }
+    };
+  }
+
+  return {
+    redirect: {
+      destination: '/',
+      permanent: false
+    }
+  };
+};
+
+export const getStaticPaths: GetStaticPaths<Params> = async () => {
   // Get all the home IDs from database
   const homes = await prisma.home.findMany({
     select: { id: true }
@@ -24,37 +51,18 @@ export async function getStaticPaths() {
     })),
     fallback: true
   };
+};
+
+interface ListedHomeProps {
+  home: Home;
 }
 
-export async function getStaticProps({ params }) {
-  const home = await prisma.home.findUnique({
-    where: { id: params.id }
-  });
-
-  if (home) {
-    return {
-      props: JSON.parse(JSON.stringify(home))
-    };
-  }
-
-  return {
-    redirect: {
-      destination: '/',
-      permanent: false
-    }
-  };
-}
-
-const ListedHome = (home = null) => {
+const ListedHome = ({ home }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { user, isLoading: userIsLoading, error } = useUser();
   const router = useRouter();
 
   const [isOwner, setIsOwner] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  if (router.isFallback) {
-    return 'Loading...';
-  }
 
   useEffect(() => {
     const checkUser = async () => {
@@ -62,22 +70,26 @@ const ListedHome = (home = null) => {
         return;
       }
       try {
-        const owner = await axios.get<User>(`/api/homes/${home.id}/owner`);
+        const owner = await axios.get<User>(`/api/homes/${home?.id}/owner`);
         setIsOwner(owner?.data.id === user?.sub);
       } catch (err) {
         setIsOwner(false);
       }
     };
     checkUser();
-  }, [user]);
+  }, [user, error, userIsLoading, home]);
+
+  if (router.isFallback) {
+    return 'Loading...';
+  }
 
   const deleteHome = async () => {
-    let toastId: string;
+    let toastId = '';
     try {
       toastId = toast.loading('Deleting...');
       setDeleting(true);
       // Delete home from DB
-      await axios.delete(`/api/homes/${home.id}`);
+      await axios.delete(`/api/homes/${home?.id}`);
       // Redirect user
       toast.success('Successfully deleted', { id: toastId });
       router.push('/homes');
@@ -112,7 +124,7 @@ const ListedHome = (home = null) => {
             <div className="flex items-center space-x-2">
               <button
                 type="button"
-                onClick={() => router.push(`/homes/${home.id}/edit`)}
+                onClick={() => router.push(`/homes/${home?.id}/edit`)}
                 className="px-4 py-1 border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white transition rounded-md disabled:text-gray-800 disabled:bg-transparent disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Edit
