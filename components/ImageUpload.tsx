@@ -18,19 +18,23 @@ interface ImageUploadProps {
 
 const ImageUpload = ({
   label = 'Image',
-  initialImage = null,
+  initialImage,
   objectFit = 'cover',
   accept = '.png, .jpg, .jpeg, .gif',
   sizeLimit = 10 * 1024 * 1024, // 10MB
   onChangePicture = (data: any) => null
 }: ImageUploadProps) => {
-  const pictureRef = useRef<HTMLInputElement>();
+  const pictureRef = useRef<HTMLInputElement>(null);
 
   const [image, setImage] = useState(initialImage);
   const [updatingPicture, setUpdatingPicture] = useState(false);
-  const [pictureError, setPictureError] = useState(null);
+  const [pictureError, setPictureError] = useState<string | null>(null);
 
   const handleOnChangePicture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files == null) {
+      return;
+    }
+
     const file = e.target.files[0];
     const reader = new FileReader();
 
@@ -40,9 +44,9 @@ const ImageUpload = ({
       'load',
       async function () {
         try {
-          setImage({ src: reader?.result?.toString(), alt: fileName });
+          setImage({ src: reader?.result?.toString() ?? '', alt: fileName });
           if (typeof onChangePicture === 'function') {
-            await onChangePicture(reader.result);
+            onChangePicture(reader.result);
           }
         } catch (err) {
           toast.error('Unable to update image');
@@ -56,7 +60,7 @@ const ImageUpload = ({
     if (file) {
       if (file.size <= sizeLimit) {
         setUpdatingPicture(true);
-        setPictureError('');
+        setPictureError(null);
         reader.readAsDataURL(file);
       } else {
         setPictureError('File size is exceeding 10MB.');
@@ -113,17 +117,5 @@ const ImageUpload = ({
     </div>
   );
 };
-
-// ImageUpload.propTypes = {
-//   label: PropTypes.string,
-//   initialImage: PropTypes.shape({
-//     src: PropTypes.string,
-//     alt: PropTypes.string,
-//   }),
-//   objectFit: PropTypes.string,
-//   accept: PropTypes.string,
-//   sizeLimit: PropTypes.number,
-//   onChangePicture: PropTypes.func,
-// };
 
 export default ImageUpload;

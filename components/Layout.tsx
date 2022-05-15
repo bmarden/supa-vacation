@@ -27,7 +27,7 @@ const menuItems: MenuItemType[] = [
   {
     label: 'List a new home',
     icon: PlusIcon,
-    href: '/list'
+    href: '/create'
   },
   {
     label: 'My homes',
@@ -52,7 +52,6 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
-  const isLoadingUser = status === 'loading';
 
   const { user, error, isLoading } = useUser();
 

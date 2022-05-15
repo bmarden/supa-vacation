@@ -1,13 +1,9 @@
-// module.exports = {
-//   reactStrictMode: true,
-//   images: {
-//     domains: ['stqhnnknkophznapfdst.supabase.co', 's.gravatar.com']
-//   }
-// }
 const { withSuperjson } = require('next-superjson')
+
+const supabaseDomain = process.env.SUPABASE_URL.split('/')[2]
 module.exports = withSuperjson()({
   reactStrictMode: true,
   images: {
-    domains: ['stqhnnknkophznapfdst.supabase.co', 's.gravatar.com']
+    domains: [supabaseDomain, 's.gravatar.com']
   }
 })
