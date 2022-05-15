@@ -1,19 +1,31 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import PropTypes from 'prop-types';
 import { HeartIcon } from '@heroicons/react/solid';
 
+interface CardProps {
+  id: string;
+  image: string | null;
+  title: string;
+  description: string;
+  guests?: number;
+  beds?: number;
+  baths?: number;
+  price?: number;
+  favorite?: boolean;
+  onClickFavorite: (id: string) => void;
+}
+
 const Card = ({
-  id = '',
+  id,
   image = '',
-  title = '',
+  title ,
   guests = 0,
   beds = 0,
   baths = 0,
   price = 0,
   favorite = false,
-  onClickFavorite = () => null,
-}) => (
+  onClickFavorite = () => null
+}: CardProps) => (
   <Link href={`/homes/${id}`}>
     <a className="block w-full">
       <div className="relative">
@@ -30,7 +42,7 @@ const Card = ({
         </div>
         <button
           type="button"
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
             if (typeof onClickFavorite === 'function') {
               onClickFavorite(id);
@@ -45,9 +57,7 @@ const Card = ({
           />
         </button>
       </div>
-      <div className="mt-2 w-full text-gray-700 font-semibold leading-tight">
-        {title ?? ''}
-      </div>
+      <div className="mt-2 w-full text-gray-700 font-semibold leading-tight">{title ?? ''}</div>
       <ol className="mt-1 inline-flex items-center space-x-1 text-gray-500">
         <li>
           <span>{guests ?? 0} guests</span>
@@ -64,25 +74,12 @@ const Card = ({
       <p className="mt-2">
         {new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'USD',
+          currency: 'USD'
         }).format(price ?? 0)}{' '}
         <span className="text-gray-500">/night</span>
       </p>
     </a>
   </Link>
 );
-
-Card.propTypes = {
-  id: PropTypes.string.isRequired,
-  image: PropTypes.string,
-  title: PropTypes.string,
-  description: PropTypes.string,
-  guests: PropTypes.number,
-  beds: PropTypes.number,
-  baths: PropTypes.number,
-  price: PropTypes.number,
-  favorite: PropTypes.bool,
-  onClickFavorite: PropTypes.func,
-};
 
 export default Card;
