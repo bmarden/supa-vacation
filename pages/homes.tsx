@@ -1,10 +1,8 @@
 import Layout from '@/components/Layout';
 import Grid from '@/components/Grid';
 import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { InferGetServerSidePropsType } from 'next';
-
-const prisma = new PrismaClient();
 
 export const getServerSideProps = withPageAuthRequired({
   getServerSideProps: async (ctx) => {

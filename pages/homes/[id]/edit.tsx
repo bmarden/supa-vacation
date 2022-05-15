@@ -1,12 +1,10 @@
 // pages/homes/[id]/edit.js
 import Layout from '@/components/Layout';
 import ListingForm, { FormValues } from '@/components/ListingForm';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { withPageAuthRequired, getSession } from '@auth0/nextjs-auth0';
 import { InferGetServerSidePropsType } from 'next'
 import axios from 'axios';
-
-const prisma = new PrismaClient();
 
 export const getServerSideProps = withPageAuthRequired({
   getServerSideProps: async (ctx) => {

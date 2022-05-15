@@ -1,13 +1,10 @@
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
-import { PrismaClient } from '@prisma/client';
-import { createClient } from '@supabase/supabase-js';
-import * as URL from 'url';
+import { prisma } from '@/lib/prisma';
+import { supabase } from '@/lib/supabase';
 import { getId } from 'utils/helpers';
 
-const supabaseBucket = process.env.SUPABASE_BUCKET;
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabaseBucket = process.env.SUPABASE_BUCKET ?? '';
 
-const prisma = new PrismaClient();
 
 export default withApiAuthRequired(async function handler(req, res) {
   const session = getSession(req, res);
@@ -27,6 +24,7 @@ export default withApiAuthRequired(async function handler(req, res) {
   if (!user?.listedHomes?.find((home) => home.id === id)) {
     return res.status(401).json({ message: 'Unauthorized' });
   }
+
   // Update home
   if (req.method === 'PATCH') {
     try {

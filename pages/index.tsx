@@ -1,19 +1,18 @@
 import Layout from '@/components/Layout';
 import Grid from '@/components/Grid';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { InferGetServerSidePropsType } from 'next';
 
 export async function getServerSideProps() {
   const homes = await prisma.home.findMany();
   return {
     props: {
-      homes: JSON.parse(JSON.stringify(homes))
+      homes
     }
   };
 }
 
-export default function Home({ homes = [] }) {
+export default function Home({ homes = [] }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <Layout>
       <h1 className="text-xl font-medium text-gray-800">Top-rated places to stay</h1>

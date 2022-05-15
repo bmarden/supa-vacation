@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
-
-const prisma = new PrismaClient();
 
 export default withApiAuthRequired(async function handler(req, res) {
   const session = getSession(req, res);
@@ -20,10 +18,8 @@ export default withApiAuthRequired(async function handler(req, res) {
         where: { id: session.user.sub }
       })
 
-      console.log(user);
-
       const home = await prisma.home.create({
-        data: { image, title, description, price, guests, beds, baths, ownerId: user.id }
+        data: { image, title, description, price, guests, beds, baths, ownerId: user?.id ?? '' }
       });
       res.status(200).json(home);
     } catch (err) {

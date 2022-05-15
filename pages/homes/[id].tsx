@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import Image from 'next/image';
 import Layout from '@/components/Layout';
-import { Home, PrismaClient, User } from '@prisma/client';
+import { Home, User } from '@prisma/client';
+import { prisma } from '@/lib/prisma'
 import { useRouter } from 'next/router';
 import { useUser } from '@auth0/nextjs-auth0';
 import { useState } from 'react';
@@ -9,8 +10,6 @@ import { InferGetStaticPropsType } from 'next';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { GetStaticPaths, GetStaticProps } from 'next';
-
-const prisma = new PrismaClient();
 
 type Params = { id: string };
 type Props = {

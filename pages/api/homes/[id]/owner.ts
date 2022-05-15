@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 import * as URL from 'url';
 import { getId } from 'utils/helpers';
 
-const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -11,11 +10,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const id = getId(req.query.id);
       // console.log(id);
 
-      const { owner } = await prisma.home.findUnique({
+      const result = await prisma.home.findUnique({
         where: { id },
         select: { owner: true }
       });
-      res.status(200).json(owner);
+      res.status(200).json(result?.owner);
     } catch (err) {
       console.error(err)
       res.status(500).json({ message: 'Something went wrong' });
