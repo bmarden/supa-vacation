@@ -47,7 +47,7 @@ const menuItems: MenuItemType[] = [
 ];
 
 interface LayoutProps {
-  children: JSX.Element;
+  children: React.ReactNode;
 }
 
 const Layout = ({ children }: LayoutProps) => {

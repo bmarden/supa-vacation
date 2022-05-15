@@ -4,7 +4,7 @@ import axios from 'axios';
 import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 
 export default withPageAuthRequired(function Create() {
-  const addHome = (data) => axios.post('/api/homes', data);
+  const addHome = (data: any) => axios.post('/api/homes', data);
 
   return (
     <Layout>

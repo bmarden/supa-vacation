@@ -1,11 +1,14 @@
-import PropTypes from 'prop-types';
 import Card from '@/components/Card';
 import { ExclamationIcon } from '@heroicons/react/outline';
+import { Home } from '@prisma/client';
 
-const Grid = ({ homes = [] }) => {
+interface GridProps {
+  homes: Home[]
+}
+const Grid = ({ homes = [] }: GridProps) => {
   const isEmpty = homes.length === 0;
 
-  const toggleFavorite = async id => {
+  const toggleFavorite = async ( id: string ) => {
     // TODO: Add/remove home from the authenticated user's favorites
   };
 
@@ -21,10 +24,6 @@ const Grid = ({ homes = [] }) => {
       ))}
     </div>
   );
-};
-
-Grid.propTypes = {
-  homes: PropTypes.array,
 };
 
 export default Grid;
