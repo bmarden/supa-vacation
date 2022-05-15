@@ -1,7 +1,6 @@
 import { useState } from 'react'; 
 import { useRouter } from 'next/router';
 import * as Yup from 'yup';
-import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { withFormik, FormikProps, FormikErrors, Form, Field, Formik } from 'formik';
 import Input from '@/components/Input';

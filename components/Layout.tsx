@@ -52,9 +52,6 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
-
-  const { data: session, status } = useSession();
-  const user = session?.user;
   const isLoadingUser = status === 'loading';
 
   const { user, error, isLoading } = useUser();
@@ -64,9 +61,6 @@ const Layout = ({ children }: LayoutProps) => {
       console.log(user);
     }
   }, [user]);
-
-  const openModal = () => setShowModal(true);
-  const closeModal = () => setShowModal(false);
 
   return (
     <>

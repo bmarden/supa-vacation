@@ -40,7 +40,7 @@ const ImageUpload = ({
       'load',
       async function () {
         try {
-          setImage({ src: reader.result.toString(), alt: fileName });
+          setImage({ src: reader?.result?.toString(), alt: fileName });
           if (typeof onChangePicture === 'function') {
             await onChangePicture(reader.result);
           }
