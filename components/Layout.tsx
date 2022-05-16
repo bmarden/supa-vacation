@@ -55,12 +55,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   const { user, error, isLoading } = useUser();
 
-  useEffect(() => {
-    if (user != null) {
-      console.log(user);
-    }
-  }, [user]);
-
   return (
     <>
       <Head>

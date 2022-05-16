@@ -18,7 +18,7 @@ interface CardProps {
 const Card = ({
   id,
   image = '',
-  title ,
+  title,
   guests = 0,
   beds = 0,
   baths = 0,
@@ -37,6 +37,7 @@ const Card = ({
               layout="fill"
               objectFit="cover"
               className="hover:opacity-80 transition"
+              priority
             />
           ) : null}
         </div>
@@ -44,9 +45,7 @@ const Card = ({
           type="button"
           onClick={(e) => {
             e.preventDefault();
-            if (typeof onClickFavorite === 'function') {
-              onClickFavorite(id);
-            }
+            onClickFavorite(id);
           }}
           className="absolute top-2 right-2"
         >
