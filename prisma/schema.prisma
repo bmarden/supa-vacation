@@ -21,8 +21,9 @@ model Home {
   baths       Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  owner       User     @relation(fields: [ownerId], references: [id])
+  owner       User     @relation(name: "UserOwner", fields: [ownerId], references: [id])
   ownerId     String
+  users        User[]   @relation(name: "UserFavorites")
 }
 
 model User {
@@ -31,5 +32,6 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
-  listedHomes   Home[]
+  listedHomes   Home[]    @relation("UserOwner")
+  favoriteHomes Home[]    @relation("UserFavorites")
 }
