@@ -1,15 +1,22 @@
 import { prisma } from '@/lib/prisma';
 import { getId } from 'utils/helpers';
 import { withApiAuthRequired, getSession } from '@auth0/nextjs-auth0';
+import { handleServerError, handleSuccess, handleUnauthorized } from 'utils/respHandlers';
+import { StandardResponse } from 'types/responses';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-export default withApiAuthRequired(async function handler(req, res) {
+export default withApiAuthRequired(async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<StandardResponse>
+) {
   const session = getSession(req, res);
 
   if (!session) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    handleUnauthorized(res);
+    return;
   }
 
-  const id = getId(req.query.id);
+  const homeId = getId(req.query.id);
 
   if (req.method === 'PUT') {
     try {
@@ -20,18 +27,36 @@ export default withApiAuthRequired(async function handler(req, res) {
         data: {
           favoriteHomes: {
             connect: {
-              id
+              id: homeId
             }
           }
         }
       });
-      res.status(200).json({ message: 'success' });
+      handleSuccess(res, { message: 'successfully added favorite' });
       return;
     } catch (err) {
-      res.status(500).json({ message: 'Something went wrong' });
+      handleServerError(res, err);
     }
   }
   if (req.method === 'DELETE') {
+    try {
+      await prisma.user.update({
+        where: {
+          id: session.user.sub
+        },
+        data: {
+          favoriteHomes: {
+            disconnect: {
+              id: homeId
+            }
+          }
+        }
+      });
+      handleSuccess(res, { message: 'successfully removed favorite' });
+    } catch (error) {
+      handleServerError(res, error);
+      return;
+    }
     return;
   }
   res.setHeader('Allow', ['PUT', 'DELETE']);

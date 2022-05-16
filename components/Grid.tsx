@@ -27,9 +27,17 @@ const Grid = ({ homes = [] }: GridProps) => {
   }, [user]);
 
   const toggleFavorite = async (id: string) => {
-    const resp = await axios.put(`/api/homes/${id}/favorite`);
-    if (resp.status === 200) {
-      setFavorites((favorites) => [...favorites, id]);
+    if (favorites.includes(id)) {
+      const resp = await axios.delete(`/api/homes/${id}/favorite`)
+      if (resp.status === 200) {
+        console.log(resp);
+        setFavorites(favorites => favorites.filter((homeId) => homeId !== id))
+      }
+    } else {
+      const resp = await axios.put(`/api/homes/${id}/favorite`);
+      if (resp.status === 200) {
+        setFavorites((favorites) => [...favorites, id]);
+      }
     }
   };
 
